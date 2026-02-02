@@ -50,6 +50,7 @@ resource "aws_iam_group" "admins" {
 
 data "aws_iam_group" "admins" {
   group_name = "Admins"
+  depends_on = [aws_iam_group.admins]
   
 }
 
