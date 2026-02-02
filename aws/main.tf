@@ -42,3 +42,50 @@ resource "aws_s3_object" "example" {
   }
   
 }
+
+resource "aws_iam_group" "admins" {
+  name = "Admins"
+  
+}
+
+data "aws_iam_group" "admins" {
+  group_name = "Admins"
+  
+}
+
+resource "aws_s3_bucket_public_access_block" "example" {
+  bucket = aws_s3_bucket.example.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+resource "aws_s3_bucket_policy" "example" {
+    bucket = aws_s3_bucket.example.id
+    
+    depends_on = [aws_s3_bucket_public_access_block.example]
+    
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowReadOnly",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::my-tf-test-bucket-sanket-12345",
+                "arn:aws:s3:::my-tf-test-bucket-sanket-12345/*"
+            ]
+        }
+    ]
+}
+EOF
+  
+}
